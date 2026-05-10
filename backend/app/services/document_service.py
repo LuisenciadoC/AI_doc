@@ -4,40 +4,27 @@ class DocumentService:
         self.repository = repository
 
     # Método para crear un documento
-    def create_document(self, titulo, codigo_documento, id_area, id_tipo):
+    def create_document(self, data):
 
-        # Validaciones básicas
-        if not titulo:
+        titulo = data.get("titulo")
+        descripcion = data.get("descripcion")
+        codigo_documento = data.get("codigo_documento")
+        id_area = data.get("id_area")
+        id_tipo = data.get("id_tipo")
+
+        if not titulo or not codigo_documento:
             return {
                 "success": False,
-                "message": "El título es obligatorio"
+                "message": "Título y código son obligatorios"
             }
 
-        if not codigo_documento:
-            return {
-                "success": False,
-                "message": "El código es obligatorio"
-            }
-
-        if not id_area or not id_tipo:
-            return {
-                "success": False,
-                "message": "Área y tipo son obligatorios"
-            }
-
-        # Enviar a repository
-        document = self.repository.create(
+        return self.repository.create(
             titulo,
+            descripcion,
             codigo_documento,
             id_area,
             id_tipo
         )
-
-        return {
-            "success": True,
-            "message": "Documento creado correctamente",
-            "data": document
-        }
         
     # Método para visualizar documentos
     def view_documents(self):
@@ -62,3 +49,36 @@ class DocumentService:
             "success": True,
             "data": document
         }
+        
+    # Método para actualizar documento
+    def update_document(self, id_documento, data):
+
+        # Buscar si existe documento
+        existing = self.repository.get_by_id(id_documento)
+        if not existing:
+            return {
+                "success": False,
+                "message": "Documento no encontrado"
+            }
+            
+        # Guardar version anterior (provisional)
+        version_history = {
+            "id_documento": existing["id_documento"],
+            "titulo": existing["titulo"],
+            "codigo_documento": existing["codigo_documento"],
+            "id_area": existing["id_area"],
+            "id_tipo": existing["id_tipo"] 
+        }
+        
+        self.repository.save_version_history(version_history)
+        
+        #Actualizar documento
+        updated = self.repository.update(id_documento, data)
+        
+        return {
+            "success": True,
+            "message": "Documento actualizado correctamente",
+            "data": updated
+        }
+        
+        

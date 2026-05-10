@@ -12,18 +12,7 @@ class DocumentController:
     # Métodos estáticos para manejar las solicitudes de creación del frontend
     @staticmethod
     def create_document(data):
-
-        titulo = data.get("titulo")
-        codigo_documento = data.get("codigo_documento")
-        id_area = data.get("id_area")
-        id_tipo = data.get("id_tipo")
-
-        return service.create_document(
-            titulo,
-            codigo_documento,
-            id_area,
-            id_tipo
-        )
+        return service.create_document(data)
         
     # Métodos para manejar las solicitudes de visualización del frontend
     @staticmethod
@@ -34,3 +23,8 @@ class DocumentController:
     @staticmethod
     def view_document_id(id_documento):
         return service.view_documents_id(id_documento)
+    
+    # Métodos para actualizar documento
+    @staticmethod
+    def update_document(id_documento, data):
+        return service.update_document(id_documento, data)
