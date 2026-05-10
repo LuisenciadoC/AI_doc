@@ -1,3 +1,5 @@
+import re
+
 from app.services.document_service import DocumentService
 from app.repositories.document_repository import DocumentRepository
 
@@ -7,6 +9,7 @@ service = DocumentService(repo)
 
 class DocumentController:
 
+    # Métodos estáticos para manejar las solicitudes de creación del frontend
     @staticmethod
     def create_document(data):
 
@@ -21,3 +24,13 @@ class DocumentController:
             id_area,
             id_tipo
         )
+        
+    # Métodos para manejar las solicitudes de visualización del frontend
+    @staticmethod
+    def view_documents():
+        return service.view_documents()
+    
+    # Métodos para manejar las solicitudes de visualización del frontend por ID
+    @staticmethod
+    def view_document_id(id_documento):
+        return service.view_documents_id(id_documento)
