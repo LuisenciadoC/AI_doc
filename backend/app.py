@@ -1,32 +1,12 @@
 from flask import Flask
-from flask_cors import CORS
-from app.config.db import get_connection
 from app.routes.auth_routes import auth
+from app.routes.document_routes import document
 
 app = Flask(__name__)
 
-CORS(app)
+# Registrar rutas
+app.register_blueprint(auth, url_prefix="/auth")
+app.register_blueprint(document, url_prefix="/api")
 
-app.register_blueprint(auth)
-
-@app.route('/test')
-def test():
-
-    try:
-
-        connection = get_connection()
-
-        return {
-            "success": True,
-            "message": "Backend y SQL Server funcionando"
-        }
-
-    except Exception as e:
-
-        return {
-            "success": False,
-            "error": str(e)
-        }
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
