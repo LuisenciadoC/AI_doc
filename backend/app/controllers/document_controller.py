@@ -27,7 +27,24 @@ class DocumentController:
     def update_document(id_documento, data):
         return service.update_document(id_documento, data)
     
-    # Métodos para eliminar documento
+# Métodos para eliminar documento   
+    # Método para hacer Soft delete
     @staticmethod
     def delete_document(id_documento):
-        return service.delete_document(id_documento)
+        return service.delete_document(
+            id_documento
+        )
+    
+    # Método para eliminar de manera permanente
+    @staticmethod
+    def hard_delete(id_documento):
+        return service.hard_delete(id_documento)
+    
+    @staticmethod
+    def restore_document(id_documento):
+
+        return service.restore_document(
+            id_documento
+        )
+        
+    

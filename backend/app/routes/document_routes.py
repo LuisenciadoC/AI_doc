@@ -35,5 +35,16 @@ def update_document(id_documento):
 #Eliminar documento
 @document.route('/view_documents/<int:id_documento>', methods=['DELETE'])
 def delete_document(id_documento):
-    result = DocumentController.delete_document(id_documento)
+    result = DocumentController.delete_document(
+        id_documento
+    )
+
+    return jsonify(result)
+
+@document.route('/view_documents/<int:id_documento>/restore', methods=['PUT'])
+def restore_document(id_documento):
+    result = DocumentController.restore_document(
+        id_documento
+    )
+
     return jsonify(result)

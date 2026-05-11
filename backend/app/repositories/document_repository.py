@@ -64,18 +64,14 @@ class DocumentRepository:
         conn = get_connection()
         cursor = conn.cursor()
 
-        query = query = """
-        SELECT * 
-        FROM documento 
-        WHERE id_documento = ?
-        AND estado = 1
-        """
+        query = "SELECT * FROM documento WHERE id_documento = ?"
         
         cursor.execute(query, (id_documento,))
 
         row = cursor.fetchone()
 
         if row:
+
             return {
                 "id_documento": row[0],
                 "titulo": row[1],
@@ -83,23 +79,74 @@ class DocumentRepository:
                 "codigo_documento": row[3],
                 "fecha_creacion": row[4],
                 "id_area": row[5],
-                "id_tipo": row[6]
+                "id_tipo": row[6],
+                "estado": row[7],
+
+                # NUEVOS CAMPOS
+                "numero_version": row[8],
+                "es_vigente": row[9]
             }
 
         return None
     
     # Método para actualizar un documento
-    def update(self, id_documento, data):
-        for doc in self.documents:
-            if doc["id_documento"] == id_documento:
-                doc["titulo"] = data.get("titulo", doc["titulo"])
-                doc["codigo_documento"] = data.get("codigo_documento", doc["codigo_documento"])
-                doc["id_area"] = data.get("id_area", doc["id_area"])
-                doc["id_tipo"] = data.get("id_tipo", doc["id_tipo"])
+    def update(self, id_documento, data, new_version):
 
-                return doc
-            
-        return None
+        # Obtener documento actual
+        current_document = self.get_by_id(id_documento)
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = """
+        UPDATE documento
+        SET
+            titulo = ?,
+            descripcion = ?,
+            id_area = ?,
+            id_tipo = ?,
+            numero_version = ?
+        WHERE id_documento = ?
+        """
+
+        cursor.execute(
+            query,
+            (
+                # Si no envían titulo, conserva el actual
+                data.get(
+                    "titulo",
+                    current_document["titulo"]
+                ),
+
+                # Si no envían descripcion, conserva la actual
+                data.get(
+                    "descripcion",
+                    current_document["descripcion"]
+                ),
+
+                # Si no envían area, conserva la actual
+                data.get(
+                    "id_area",
+                    current_document["id_area"]
+                ),
+
+                # Si no envían tipo, conserva el actual
+                data.get(
+                    "id_tipo",
+                    current_document["id_tipo"]
+                ),
+
+                # Nueva versión automática
+                new_version,
+
+                # ID documento
+                id_documento
+            )
+        )
+
+        conn.commit()
+
+        return self.get_by_id(id_documento)
     
     # Método para guardar versiones (provisional)
     def save_version_history(self, document):
@@ -118,17 +165,21 @@ class DocumentRepository:
     
     # Soft delete (mayores a 36 horas)
     def soft_delete(self, id_documento):
+
         conn = get_connection()
         cursor = conn.cursor()
-        
+
         query = """
         UPDATE documento
-        SET estado = 0
+        SET
+            estado = 0,
+            es_vigente = 0
         WHERE id_documento = ?
         """
-        
+
         cursor.execute(query, (id_documento,))
-        conn.commit() 
+
+        conn.commit()
         
     # Método para buscar documentos para IA
     def search_documents(self, question):
@@ -169,3 +220,130 @@ class DocumentRepository:
             }
             for r in rows
         ]
+        
+    # Método para guardar versiones antiguas
+    def save_old_version(self, document):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = """
+        INSERT INTO version_documento
+        (
+            numero_version,
+            titulo,
+            descripcion,
+            codigo_documento,
+            fecha_creacion,
+            es_vigente,
+            estado,
+            id_documento
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """
+
+        cursor.execute(
+            query,
+            (
+                document["numero_version"],
+                document["titulo"],
+                document["descripcion"],
+                document["codigo_documento"],
+                document["fecha_creacion"],
+                0,
+                1,
+                document["id_documento"]
+            )
+        )
+
+        conn.commit()
+    
+    # Método para obtener ultima version
+    def get_last_version(self, id_documento):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = """
+        SELECT TOP 1 *
+        FROM version_documento
+        WHERE id_documento = ?
+        ORDER BY id_version DESC
+        """
+
+        cursor.execute(query, (id_documento,))
+
+        row = cursor.fetchone()
+
+        if row:
+
+            return {
+                "id_version": row[0],
+                "numero_version": row[1],
+                "titulo": row[2],
+                "descripcion": row[3],
+                "codigo_documento": row[4]
+            }
+
+        return None
+    
+    # Método para restaurar versiones
+    def restore_version(self, id_documento, version):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = """
+        UPDATE documento
+        SET
+            titulo = ?,
+            descripcion = ?,
+            codigo_documento = ?,
+            numero_version = ?
+        WHERE id_documento = ?
+        """
+
+        cursor.execute(
+            query,
+            (
+                version["titulo"],
+                version["descripcion"],
+                version["codigo_documento"],
+                version["numero_version"],
+                id_documento
+            )
+        )
+
+        conn.commit()
+    
+    # Método para borrar la ultima version    
+    def delete_last_version(self, id_version):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = """
+        DELETE FROM version_documento
+        WHERE id_version = ?
+        """
+
+        cursor.execute(query, (id_version,))
+
+        conn.commit()
+        
+    def restore_document(self, id_documento):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = """
+        UPDATE documento
+        SET
+            estado = 1,
+            es_vigente = 1
+        WHERE id_documento = ?
+        """
+
+        cursor.execute(query, (id_documento,))
+
+        conn.commit()
