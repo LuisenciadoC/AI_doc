@@ -1,3 +1,4 @@
+from datetime import datetime
 class DocumentService:
 
     def __init__(self, repository):
@@ -81,4 +82,35 @@ class DocumentService:
             "data": updated
         }
         
+    # Método para eliminar documento
+    def delete_document(self, id_documento):
+        
+        document = self.repository.get_by_id(id_documento)
+
+        if not document:
+            return{
+                "success": False,
+                "message": "Documento no encontrado"
+            }
+            
+        fecha_creacion = document["fecha_creacion"]
+        hours = (datetime.now() - fecha_creacion).total_seconds() / 3600
+        
+        #Hard delete (Documentos menores a 36 horas)
+        if hours <= 36:
+            self.repository.hard_delete(id_documento)
+            
+            return {
+                "success": True,
+                "message": "Documento eliminado correctamente."
+            }
+            
+        #Soft delete (Docuentos mayores a 36 horas)
+        
+        self.repository.soft_delete(id_documento)
+        
+        return{
+            "success": True,
+            "message": "Documento desactivado"
+        }
         

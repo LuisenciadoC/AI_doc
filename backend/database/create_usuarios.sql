@@ -1,3 +1,4 @@
+--Insertar usuarios de ejemplo en la tabla usuarios
 USE gestion_documental;
 GO
 
@@ -8,6 +9,8 @@ VALUES
 ('Juan', 'juan@Helse.com', '12345', 1);
 GO
 
+
+--Actualizar los correos de los usuarios para reflejar el nuevo dominio y establecer una contraseña común
 USE gestion_documental;
 GO
 

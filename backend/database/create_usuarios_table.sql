@@ -1,3 +1,4 @@
+--Crear la tabla usuarios
 USE gestion_documental;
 GO
 

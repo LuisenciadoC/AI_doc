@@ -1,5 +1,3 @@
-import re
-
 from app.services.document_service import DocumentService
 from app.repositories.document_repository import DocumentRepository
 
@@ -28,3 +26,8 @@ class DocumentController:
     @staticmethod
     def update_document(id_documento, data):
         return service.update_document(id_documento, data)
+    
+    # Métodos para eliminar documento
+    @staticmethod
+    def delete_document(id_documento):
+        return service.delete_document(id_documento)

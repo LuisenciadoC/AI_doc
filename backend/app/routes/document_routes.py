@@ -31,3 +31,9 @@ def update_document(id_documento):
     data = request.json
     result = DocumentController.update_document(id_documento, data)
     return jsonify(result)
+
+#Eliminar documento
+@document.route('/view_documents/<int:id_documento>', methods=['DELETE'])
+def delete_document(id_documento):
+    result = DocumentController.delete_document(id_documento)
+    return jsonify(result)

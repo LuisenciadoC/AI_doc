@@ -3,14 +3,14 @@ from app.config.db import get_connection
 
 class DocumentRepository:
 
+    from app.config.db import get_connection
+
     def __init__(self):
         # Simulación temporal (hasta conectar SQL Server)
         self.documents = []
         self.versions = []
 
     # Método para crear un documento
-    from app.config.db import get_connection
-
     def create(self, titulo, descripcion, codigo_documento, id_area, id_tipo):
 
         conn = get_connection()
@@ -37,7 +37,12 @@ class DocumentRepository:
         conn = get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT * FROM documento")
+        query = """
+        SELECT * FROM documento
+        WHERE estado = 1
+        """
+
+        cursor.execute(query)
         rows = cursor.fetchall()
 
         return [
@@ -59,7 +64,13 @@ class DocumentRepository:
         conn = get_connection()
         cursor = conn.cursor()
 
-        query = "SELECT * FROM documento WHERE id_documento = ?"
+        query = query = """
+        SELECT * 
+        FROM documento 
+        WHERE id_documento = ?
+        AND estado = 1
+        """
+        
         cursor.execute(query, (id_documento,))
 
         row = cursor.fetchone()
@@ -93,3 +104,68 @@ class DocumentRepository:
     # Método para guardar versiones (provisional)
     def save_version_history(self, document):
         self.versions.append(document)
+        
+# Métodos para eliminar documentos
+    # Hard delete (menor a 36 horas)
+    def hard_delete(self, id_documento):
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        query = "DELETE FROM documento WHERE id_documento = ?"
+        
+        cursor.execute(query, (id_documento,))
+        conn.commit()
+    
+    # Soft delete (mayores a 36 horas)
+    def soft_delete(self, id_documento):
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        query = """
+        UPDATE documento
+        SET estado = 0
+        WHERE id_documento = ?
+        """
+        
+        cursor.execute(query, (id_documento,))
+        conn.commit() 
+        
+    # Método para buscar documentos para IA
+    def search_documents(self, question):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        # Separar palabras
+        words = question.split()
+
+        conditions = []
+        values = []
+
+        # Crear LIKE dinámicos
+        for word in words:
+
+            conditions.append("titulo LIKE ?")
+            conditions.append("descripcion LIKE ?")
+
+            values.append(f"%{word}%")
+            values.append(f"%{word}%")
+
+        query = f"""
+        SELECT *
+        FROM documento
+        WHERE {" OR ".join(conditions)}
+        """
+
+        cursor.execute(query, values)
+
+        rows = cursor.fetchall()
+
+        return [
+            {
+                "id_documento": r[0],
+                "titulo": r[1],
+                "descripcion": r[2]
+            }
+            for r in rows
+        ]
