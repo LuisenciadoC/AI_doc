@@ -93,14 +93,15 @@ class DocumentService:
         }
         
     
-    # Método para actualizar documento
-    def update_document(self, id_documento, data):
+    #---------------Actualizar documentos---------------#
+    #Ruta: /doc/view/id_documento/update
+    #Método logico para actualizar documento.
+    def update_by_id(self, id_documento, data):
+        #Buscar documento actual.
+        document = self.repository.get_editable(id_documento)
 
-        # Buscar documento actual
-        document = self.repository.get_by_id(id_documento)
-
+        #Valida si existe el documento.
         if not document:
-
             return {
                 "success": False,
                 "message": "Documento no encontrado"
@@ -109,13 +110,17 @@ class DocumentService:
         # Guardar versión anterior
         self.repository.save_old_version(document)
 
-        # Nueva versión
+        #Detectar si es actualización mayor (1.0, 2.0, 3.0, 4.0)
+        major_update = data.get("major_update", False)
+
+        #Generar nueva versión (por default es menor (1.1, 1.2, 1.3, 1.4))
         new_version = self.increase_version(
-            document["numero_version"]
+            document["version_actual"],
+            major_update
         )
 
         # Actualizar documento principal
-        updated_document = self.repository.update(
+        update_by_id = self.repository.update_by_id(
             id_documento,
             data,
             new_version
@@ -124,41 +129,25 @@ class DocumentService:
         return {
             "success": True,
             "message": "Documento actualizado",
-            "data": updated_document
+            "data": update_by_id
         }
-      
-    # Método para actualizar y comunicarse con SQL
-    def update(self, id_documento, data, new_version):
+        
+    
+    #---------------Version de documentos---------------#
+    #Método para aumentar version - Usada en update_by_id
+    def increase_version(self, current_version, major_update=False):
+        #Separar version mayor (1.0 -> 2.0) de versiones menores (1.0 -> 1.1)
+        major, minor = map(int, current_version.split("."))
 
-        conn = get_connection()
-        cursor = conn.cursor()
+        #Valida si es una version mayor o menor y le aumenta 1
+        if major_update:
+            major += 1
+            minor = 0
+        else:
+            minor += 1
 
-        query = """
-        UPDATE documento
-        SET
-            titulo = ?,
-            descripcion = ?,
-            id_area = ?,
-            id_tipo = ?,
-            numero_version = ?
-        WHERE id_documento = ?
-        """
-
-        cursor.execute(
-            query,
-            (
-                data.get("titulo"),
-                data.get("descripcion"),
-                data.get("id_area"),
-                data.get("id_tipo"),
-                new_version,
-                id_documento
-            )
-        )
-
-        conn.commit()
-
-        return self.get_by_id(id_documento)
+        return f"{major}.{minor}"
+    
         
     # Método para eliminar documento
     def delete_document(self, id_documento):
@@ -199,14 +188,6 @@ class DocumentService:
             "message": "Documento desactivado logicamente"
         }
         
-    # Método para aumentar version
-    def increase_version(self, current_version):
-
-        major, minor = current_version.split(".")
-
-        new_minor = int(minor) + 1
-
-        return f"{major}.{new_minor}"
     
     # Método para eliminar un documento de manera permanente
     def hard_delete(self, id_documento):

@@ -98,15 +98,17 @@ class DocumentRepository:
         
         #Devolver documento si es encontrado.
         if r:
-
             return {
-                "codigo_documento": r[0],
+                "id_documento": r[0],
                 "titulo": r[1],
                 "descripcion": r[2],
-                "fecha_creacion": r[3],
-                "fecha_actualizacion": r[4],
+                "codigo_documento": r[3],
+                "fecha_creacion": r[4],
                 "id_area": r[5],
                 "id_tipo": r[6],
+                "fecha_actualizacion": r[7],
+                "id_estado": r[8],
+                "version_actual": r[9]
             }
         
         #Respuesta si no existe el documento.
@@ -154,68 +156,140 @@ class DocumentRepository:
         }
     
     
-    # Método para actualizar un documento
-    def update(self, id_documento, data, new_version):
+    #---------------Actualizar documentos---------------#
+    #Ruta: /doc/view/id_documento/update
+    #Método para obtener los documentos editables.
+    def get_editable(self, id_documento):
+        #Conexion a la bd.
+        conn = get_connection()
+        cursor = conn.cursor()
 
-        # Obtener documento actual
-        current_document = self.get_by_id(id_documento)
+        #Query a ejecutar en la bd:
+        #id_documento = ? (Inserta el codigo como una consulta y no como un codigo, seguridad contra sql inyection).
+        #id_estado = 3 (el numero 3 indica que muestre solo los que tienen estado aprobado).
+        query = """
+        SELECT * FROM documento 
+        WHERE id_documento = ?
+        """
+        
+        #Ejecutor del query y guarda documento.
+        cursor.execute(query, (id_documento,))
+        r = cursor.fetchone()
+        
+        #Devolver documento si es encontrado.
+        if r:
+            return {
+                "id_documento": r[0],
+                "titulo": r[1],
+                "descripcion": r[2],
+                "codigo_documento": r[3],
+                "fecha_creacion": r[4],
+                "id_area": r[5],
+                "id_tipo": r[6],
+                "fecha_actualizacion": r[7],
+                "id_estado": r[8],
+                "version_actual": r[9]
+            }
+        
+        #Respuesta si no existe el documento.
+        return {
+            "success": False,
+            "message": "Documento no encontrado"
+        }
+    
+    #Método para actualizar un documento por id. 
+    def update_by_id(self, id_documento, data, new_version):
+        #Obtener documento actual.
+        current_document = self.get_editable(id_documento)
 
+        #Conexion a la bd y consulta.
         conn = get_connection()
         cursor = conn.cursor()
 
         query = """
-        UPDATE documento
-        SET
+        UPDATE Documento SET
             titulo = ?,
             descripcion = ?,
             id_area = ?,
             id_tipo = ?,
-            numero_version = ?
+            version_actual = ?,
+            id_estado = ?,
+            fecha_actualizacion = GETDATE()
         WHERE id_documento = ?
+        """
+
+        cursor.execute(query, (
+
+            # titulo
+            data.get("titulo", current_document["titulo"]),
+
+            # descripcion
+            data.get("descripcion", current_document["descripcion"]),
+
+            # area
+            data.get("id_area", current_document["id_area"]),
+
+            # tipo
+            data.get("id_tipo", current_document["id_tipo"]),
+
+            # version_actual
+            new_version,
+
+            # id_estado
+            data.get("id_estado", 1),
+
+            # where
+            id_documento)
+        )
+
+        conn.commit()
+
+        return self.get_editable(id_documento)
+    
+    
+    #---------------Version de documentos---------------#
+    #Método para guardar versiones antiguas
+    def save_old_version(self, document):
+        #Conexion a la bd.
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        #Consulta para guardar documento como snapshot en tabla version_documento.
+        query = """
+        INSERT INTO version_documento
+        (
+            id_documento,
+            titulo,
+            descripcion,
+            codigo_documento,
+            fecha_creacion,
+            id_area,
+            id_tipo,
+            fecha_actualizacion,
+            id_estado,
+            version_actual
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
         cursor.execute(
             query,
             (
-                # Si no envían titulo, conserva el actual
-                data.get(
-                    "titulo",
-                    current_document["titulo"]
-                ),
-
-                # Si no envían descripcion, conserva la actual
-                data.get(
-                    "descripcion",
-                    current_document["descripcion"]
-                ),
-
-                # Si no envían area, conserva la actual
-                data.get(
-                    "id_area",
-                    current_document["id_area"]
-                ),
-
-                # Si no envían tipo, conserva el actual
-                data.get(
-                    "id_tipo",
-                    current_document["id_tipo"]
-                ),
-
-                # Nueva versión automática
-                new_version,
-
-                # ID documento
-                id_documento
+                document["id_documento"],
+                document["titulo"],
+                document["descripcion"],
+                document["codigo_documento"],
+                document["fecha_creacion"],
+                document["id_area"],
+                document["id_tipo"],
+                document["fecha_actualizacion"],
+                document["id_estado"],
+                document["version_actual"]
             )
         )
 
         conn.commit()
-
-        return self.get_by_id(id_documento)
     
-    # Método para guardar versiones (provisional)
-    def save_version_history(self, document):
-        self.versions.append(document)
         
 # Métodos para eliminar documentos
     # Hard delete (menor a 36 horas)
@@ -286,42 +360,7 @@ class DocumentRepository:
             for r in rows
         ]
         
-    # Método para guardar versiones antiguas
-    def save_old_version(self, document):
-
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        query = """
-        INSERT INTO version_documento
-        (
-            numero_version,
-            titulo,
-            descripcion,
-            codigo_documento,
-            fecha_creacion,
-            es_vigente,
-            estado,
-            id_documento
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """
-
-        cursor.execute(
-            query,
-            (
-                document["numero_version"],
-                document["titulo"],
-                document["descripcion"],
-                document["codigo_documento"],
-                document["fecha_creacion"],
-                0,
-                1,
-                document["id_documento"]
-            )
-        )
-
-        conn.commit()
+  
     
     # Método para obtener ultima version
     def get_last_version(self, id_documento):

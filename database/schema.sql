@@ -139,6 +139,28 @@ CREATE TABLE Historial_cambio (
     REFERENCES Usuario(id_usuario));
 GO
 
+---------------------2.10 Tabla snapshots de documentos----------------------
+CREATE TABLE version_documento(
+    id_version_documento INT PRIMARY KEY IDENTITY(1,1),
+
+    id_documento INT NOT NULL,
+
+    titulo VARCHAR(200),
+    descripcion VARCHAR(MAX),
+    codigo_documento VARCHAR(50),
+
+    fecha_creacion DATETIME,
+    fecha_actualizacion DATETIME,
+
+    id_area INT,
+    id_tipo INT,
+    id_estado INT,
+
+    version_actual VARCHAR(10),
+
+    fecha_backup DATETIME DEFAULT GETDATE()
+);
+
 ---------------------3. Correcciones----------------------
 --3.1 Corregir columna estado para eliminar el estado en modo bit
 USE GestionDocumental;
@@ -160,3 +182,7 @@ ALTER TABLE Documento
 ADD CONSTRAINT DF_Documento_FechaCreacion
 DEFAULT GETDATE()
 FOR fecha_creacion;
+
+--3.3 Corregir tipo INT a VARCHAR para guardar versiones
+ALTER TABLE Documento
+ALTER COLUMN version_actual VARCHAR(10);

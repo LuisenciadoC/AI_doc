@@ -43,10 +43,21 @@ class DocumentController:
         return service.view_documents_cod(codigo_documento)
     
     
-    # Métodos para actualizar documento
+    #---------------Actualizar documentos---------------#
+    #Ruta: /doc/view/id_documento/update
+    #Método estatico para manejar las solicitudes de visualización y actualizacion por 
+    #id del frontend. Las respuestas se esperan del archivo document_service.py
     @staticmethod
-    def update_document(id_documento, data):
-        return service.update_document(id_documento, data)
+    def update_by_id(id_documento, data):
+        return service.update_by_id(id_documento, data)
+    
+    #Ruta: /doc/view/codigo_documento/update
+    #Método estatico para manejar las solicitudes de visualización y actualizacion por 
+    #codigo del frontend. Las respuestas se esperan del archivo document_service.py
+    @staticmethod
+    def update_by_cod(codigo_documento, data):
+        return service.update_by_cod(codigo_documento, data)
+    
     
 # Métodos para eliminar documento   
     # Método para hacer Soft delete
