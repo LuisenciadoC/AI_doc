@@ -1,6 +1,10 @@
 from app.services.document_service import DocumentService
 from app.repositories.document_repository import DocumentRepository
 
+#---------------document_controller.py---------------#
+#En este archivo se reciben las peticiones del usuario por medio de los
+#routes y elige la funcion a ejecutar por medio de metodos estaticos.
+
 # Instancias (inyección simple)
 repo = DocumentRepository()
 service = DocumentService(repo)
@@ -11,13 +15,18 @@ class DocumentController:
     @staticmethod
     def create_document(data):
         return service.create_document(data)
-        
-    # Métodos para manejar las solicitudes de visualización del frontend
+    
+    #---------------Ver documentos---------------#
+    #Ruta: /doc/view    
+    #Método estatico para manejar las solicitudes de visualización del frontend.
+    #Las respuestas se esperan del archivo document_service.py
     @staticmethod
     def view_documents():
         return service.view_documents()
     
-    # Métodos para manejar las solicitudes de visualización del frontend por ID
+    #Ruta: /doc/view/id_documento 
+    #Método estatico para manejar las solicitudes de visualización por id del 
+    #frontend. Las respuestas se esperan del archivo document_service.py
     @staticmethod
     def view_document_id(id_documento):
         return service.view_documents_id(id_documento)

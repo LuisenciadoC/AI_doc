@@ -1,5 +1,9 @@
-from datetime import datetime
 from app.config.db import get_connection
+
+#---------------document_repository.py---------------#
+#Este documento es el encargado de comunicarse con la base de datos para ejecutar
+# instrucciones del service.
+
 
 class DocumentRepository:
 
@@ -32,19 +36,27 @@ class DocumentRepository:
             "id_tipo": id_tipo
         }
     
-    # Método para obtener todos los documentos
+    #---------------Ver documentos---------------#
+    #Ruta: /doc/view 
+    #Método para obtener todos los documentos mediante la base de datos.
     def get_all(self):
+        #Conexion a la bd.
         conn = get_connection()
         cursor = conn.cursor()
 
+        #Query a ejecutar en la bd, id_estado = 3 (el numero 3 indica que 
+        #muestre solo los que tienen estado aprobado).
         query = """
         SELECT * FROM Documento
         WHERE id_estado = 3
         """
-        #actualizar estado aprobado es el valido
+        
+        #Ejecutor del query y lista de documentos.
         cursor.execute(query)
         rows = cursor.fetchall()
 
+        #Retornar la informacion obtenida el query con todos los documentos 
+        #con estado aprobado en la bd.
         return [
             {
                 "id_documento": r[0],
@@ -61,34 +73,42 @@ class DocumentRepository:
     
     # Método para obtener un documento por ID
     def get_by_id(self, id_documento):
-
+        #Conexion a la bd.
         conn = get_connection()
         cursor = conn.cursor()
 
-        query = "SELECT * FROM documento WHERE id_documento = ?"
+        #Query a ejecutar en la bd:
+        #id_documento = ? (Inserta el id como una consulta y no como un codigo, seguridad contra sql inyection).
+        #id_estado = 3 (el numero 3 indica que muestre solo los que tienen estado aprobado).
+        query = """
+        SELECT * FROM documento 
+        WHERE id_documento = ? 
+        AND id_estado = 3
+        """
         
+        #Ejecutor del query y lista de documentos.
         cursor.execute(query, (id_documento,))
-
-        row = cursor.fetchone()
-
-        if row:
+        r = cursor.fetchone()
+        
+        #Devolver documento si es encontrado.
+        if r:
 
             return {
-                "id_documento": row[0],
-                "titulo": row[1],
-                "descripcion": row[2],
-                "codigo_documento": row[3],
-                "fecha_creacion": row[4],
-                "id_area": row[5],
-                "id_tipo": row[6],
-                "estado": row[7],
-
-                # NUEVOS CAMPOS
-                "numero_version": row[8],
-                "es_vigente": row[9]
+                "id_documento": r[0],
+                "codigo_documento": r[1],
+                "titulo": r[2],
+                "descripcion": r[3],
+                "fecha_creacion": r[4],
+                "fecha_actualizacion": r[5],
+                "id_area": r[6],
+                "id_tipo": r[7],
             }
-
-        return None
+        
+        #Respuesta si no existe el documento.
+        return {
+            "success": False,
+            "message": "Documento no encontrado"
+        }
     
     # Método para actualizar un documento
     def update(self, id_documento, data, new_version):

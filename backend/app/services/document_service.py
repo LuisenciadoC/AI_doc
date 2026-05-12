@@ -1,4 +1,9 @@
 from datetime import datetime
+
+#---------------document_service.py---------------#
+#Este documento recibe la instruccion del controller y realiza todas las 
+#operaciones logicas.
+
 class DocumentService:
 
     def __init__(self, repository):
@@ -26,8 +31,11 @@ class DocumentService:
             id_area,
             id_tipo
         )
-        
-    # Método para visualizar documentos
+    
+    #---------------Ver documentos---------------#
+    #Ruta: /doc/view    
+    #Método de respuesta a la consulta de visualizacion de todos los documentos.
+    #Este metodo trabaja con get_all() metodo que se encuentra en document.repository.py
     def view_documents(self):
         documents = self.repository.get_all()
         return {
@@ -36,16 +44,13 @@ class DocumentService:
             "data": documents
         }
         
-    # Método para visualizar documentos por ID
+    #Ruta: /doc/view/id_documento
+    #Método de respuesta a la consulta de visualizacion de un documento por medio del id.
+    #Este metodo trabaja con get_by_id() metodo que se encuentra en document.repository.py
     def view_documents_id(self, id_documento):
         document = self.repository.get_by_id(id_documento)
         
-        if not document:
-            return {
-                "success": False,
-                "message": "Documento no encontrado"
-            }
-        
+        #Retorno de informacion.
         return {
             "success": True,
             "data": document

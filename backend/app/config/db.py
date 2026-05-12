@@ -1,5 +1,8 @@
 import pyodbc
 
+#---------------db.py---------------#
+#Conección a la base de datos.
+
 def get_connection():
 
     server = 'Z'
