@@ -4,7 +4,6 @@ from app.config.db import get_connection
 #Este documento es el encargado de comunicarse con la base de datos para ejecutar
 # instrucciones del service.
 
-
 class DocumentRepository:
 
     from app.config.db import get_connection
@@ -14,31 +13,38 @@ class DocumentRepository:
         self.documents = []
         self.versions = []
 
-    # Método para crear un documento
-    def create(self, titulo, descripcion, codigo_documento, id_area, id_tipo):
-
+    #---------------Crear documentos---------------#
+    #Ruta: /doc/create 
+    #Método para crear documentos en la base de datos mediante query.
+    def create(self, codigo_documento, titulo, descripcion, id_area, id_tipo, id_estado):
+        #Conexion a la bd.
         conn = get_connection()
         cursor = conn.cursor()
 
+        #Query a ejecutar en la bd para insertar el documento a crear.
         query = """
-        INSERT INTO documento (titulo, descripcion, codigo_documento, id_area, id_tipo)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO documento (codigo_documento, titulo, descripcion, id_area, id_tipo, id_estado)
+        VALUES (?, ?, ?, ?, ?, ?)
         """
 
-        cursor.execute(query, (titulo, descripcion, codigo_documento, id_area, id_tipo))
+        #Ejecutar query.
+        cursor.execute(query, (codigo_documento, titulo, descripcion, id_area, id_tipo, id_estado))
         conn.commit()
 
+        #Retornar el documento creado.
         return {
+            "codigo_documento": codigo_documento,
             "titulo": titulo,
             "descripcion": descripcion,
-            "codigo_documento": codigo_documento,
             "id_area": id_area,
-            "id_tipo": id_tipo
+            "id_tipo": id_tipo,
+            "id_estado": id_estado
         }
+    
     
     #---------------Ver documentos---------------#
     #Ruta: /doc/view 
-    #Método para obtener todos los documentos mediante la base de datos.
+    #Método para obtener todos los documentos por estado mediante la base de datos.
     def get_all(self):
         #Conexion a la bd.
         conn = get_connection()
@@ -71,7 +77,7 @@ class DocumentRepository:
             for r in rows
         ]
     
-    # Método para obtener un documento por id.
+    #Método para obtener todos los documentos por id y estado mediante la base de datos.
     def get_by_id(self, id_documento):
         #Conexion a la bd.
         conn = get_connection()
@@ -109,7 +115,7 @@ class DocumentRepository:
             "message": "Documento no encontrado"
         }
     
-    # Método para obtener un documento por codigo.
+    #Método para obtener todos los documentos por codigo y estado mediante la base de datos.
     def get_by_cod(self, codigo_documento):
         #Conexion a la bd.
         conn = get_connection()
@@ -146,6 +152,7 @@ class DocumentRepository:
             "success": False,
             "message": "Documento no encontrado"
         }
+    
     
     # Método para actualizar un documento
     def update(self, id_documento, data, new_version):

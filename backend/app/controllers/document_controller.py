@@ -11,10 +11,14 @@ service = DocumentService(repo)
 
 class DocumentController:
 
-    # Métodos estáticos para manejar las solicitudes de creación del frontend
+    #---------------Crear documentos---------------#
+    #Ruta: /doc/create
+    #Método estático para manejar las solicitudes de creación del frontend.
+    #Las respuestas se esperan del archivo document_service.py
     @staticmethod
     def create_document(data):
         return service.create_document(data)
+    
     
     #---------------Ver documentos---------------#
     #Ruta: /doc/view    
@@ -37,6 +41,7 @@ class DocumentController:
     @staticmethod
     def view_document_cod(codigo_documento):
         return service.view_documents_cod(codigo_documento)
+    
     
     # Métodos para actualizar documento
     @staticmethod

@@ -7,15 +7,20 @@ from app.controllers.document_controller import DocumentController
 
 document = Blueprint('document', __name__)
 
-#Crear documento
-@document.route('/create_document', methods=['POST'])
+
+#---------------Crear documentos---------------#
+#Ruta: /doc/create
+#Funcion para crear documentos, esta funcion obtiene los resultados del archivo document_controller.py
+#El resultado se convierte en una respuesta tipo Json.
+@document.route('/create', methods=['POST'])
 def create_document():
-    # Recibir datos del frontend
+    #Recibir datos del frontend.
     data = request.json
 
-    # Enviar al controller
+    #Enviar al controller.
     result = DocumentController.create_document(data)
     return jsonify(result)
+
 
 #---------------Ver documentos---------------#
 #Ruta: /doc/view
@@ -23,15 +28,16 @@ def create_document():
 #Funcion para ver documentos, esta funcion obtiene los resultados del archivo document_controller.py
 #El resultado se convierte en una respuesta tipo Json.
 def view_documents():
+    #Enviar al controller.
     result = DocumentController.view_documents()
     return jsonify(result)
-
 
 #Ruta: /doc/view/id_documento
 @document.route('/view/<int:id_documento>', methods=['GET'])
 #Funcion para ver documentos por medio del id, esta funcion obtiene los resultados del archivo 
 #document_controller.py el resultado se convierte en una respuesta tipo Json.
 def view_document_id(id_documento):
+    #Enviar al controller.
     result = DocumentController.view_document_id(id_documento)
     return jsonify(result)
 
@@ -40,8 +46,10 @@ def view_document_id(id_documento):
 #Funcion para ver documentos por medio del codigo, esta funcion obtiene los resultados del archivo 
 #document_controller.py el resultado se convierte en una respuesta tipo Json.
 def view_document_cod(codigo_documento):
+    #Enviar al controller.
     result = DocumentController.view_document_cod(codigo_documento)
     return jsonify(result)
+
 
 #Actualizar documento
 @document.route('/view_documents/<int:id_documento>/update', methods=['PUT'])

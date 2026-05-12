@@ -139,9 +139,10 @@ CREATE TABLE Historial_cambio (
     REFERENCES Usuario(id_usuario));
 GO
 
-
+---------------------3. Correcciones----------------------
+--3.1 Corregir columna estado para eliminar el estado en modo bit
 USE GestionDocumental;
---Corregir columna estado para eliminar el estado en modo bit
+
 ALTER TABLE Documento
 DROP COLUMN estado;
 
@@ -152,3 +153,10 @@ ALTER TABLE Documento
 ADD CONSTRAINT FK_Documento_Estado
 FOREIGN KEY (id_estado)
 REFERENCES Estado_version(id_estado);
+--3.2 Corregir estado default NULL en tabla documento columna fecha_creacion por GETDATE()
+USE GestionDocumental;
+
+ALTER TABLE Documento
+ADD CONSTRAINT DF_Documento_FechaCreacion
+DEFAULT GETDATE()
+FOR fecha_creacion;

@@ -9,28 +9,52 @@ class DocumentService:
     def __init__(self, repository):
         self.repository = repository
 
-    # Método para crear un documento
+
+    #---------------Crear documentos---------------#
+    #Ruta: /doc/create
+    #Método logico para crear un documento.
     def create_document(self, data):
 
+        #Lista de campos requeridos.
+        codigo_documento = data.get("codigo_documento")
         titulo = data.get("titulo")
         descripcion = data.get("descripcion")
-        codigo_documento = data.get("codigo_documento")
         id_area = data.get("id_area")
         id_tipo = data.get("id_tipo")
+        id_estado = data.get("id_estado")
 
-        if not titulo or not codigo_documento:
+        required_fields = ["codigo_documento", "titulo", "descripcion", "id_estado", "id_area", "id_tipo"]
+
+        #Verificar si todos los campos requeridos han sido llenados.
+        if any(data.get(field) is None for field in required_fields):
             return {
                 "success": False,
-                "message": "Título y código son obligatorios"
+                "message": "Faltan campos requeridos"
             }
 
-        return self.repository.create(
+        #Regresar valores registrados.
+        self.repository.create(
+            codigo_documento,
             titulo,
             descripcion,
-            codigo_documento,
             id_area,
-            id_tipo
+            id_tipo,
+            id_estado
         )
+
+        return {
+            "success": True,
+            "message": "Documento creado correctamente",
+            "data": {
+                "codigo_documento": codigo_documento,
+                "titulo": titulo,
+                "descripcion": descripcion,
+                "id_area": id_area,
+                "id_tipo": id_tipo,
+                "id_estado": id_estado
+            }
+        }
+    
     
     #---------------Ver documentos---------------#
     #Ruta: /doc/view    
@@ -68,6 +92,7 @@ class DocumentService:
             "data": document
         }
         
+    
     # Método para actualizar documento
     def update_document(self, id_documento, data):
 
