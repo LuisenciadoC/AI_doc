@@ -1,0 +1,4 @@
+1. que la url no muestre el id si no el codigo del Documento
+2. que el delete active el archivo anterior de existir
+3. volver a activar documento con soft delete
+4. versiones

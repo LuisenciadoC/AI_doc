@@ -1,0 +1,2 @@
+1. Documento sin descripcion
+2. Documento con fecha de un dia siguiente o demasiado antigua

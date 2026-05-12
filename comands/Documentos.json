@@ -1,0 +1,15 @@
+{
+  "titulo": "Prueba de creación de documento",
+  "codigo_documento": "DOC-006",
+  "id_area": 1,
+  "id_tipo": 1
+}
+
+{
+  "titulo": "Prueba de creación de documento actualizada",
+  "codigo_documento": "DOC-007",
+  "descripcion": "Documento de prueba actualizado",
+  "fecha_creacion": 
+  "id_area": 2,
+  "id_tipo": 3
+}

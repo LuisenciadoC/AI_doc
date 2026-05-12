@@ -1,0 +1,41 @@
+Ejecutar archivo
+    cd backend
+    .\venv\Scripts\Activate.ps1 
+    python app.py
+    ollama run mistral
+
+Rutas
+    Documentos:
+    http://127.0.0.1:5000/api/create_document
+    http://127.0.0.1:5000/api/view_documents
+    http://127.0.0.1:5000/api/view_documents/10
+    http://127.0.0.1:5000/api/view_documents/10/update
+
+
+    Login:
+    http://127.0.0.1:5000/auth/login
+
+    IA:
+    http://127.0.0.1:5000/ai/question
+
+
+Backups
+    git add .
+    git status
+    git commit -m "backup - "
+    git push origin main
+
+    Corregir nombre:
+    git commit --amend -m "backup - "
+    git push origin main --force
+
+Navegar entre carpetas
+    cd backend
+
+Ejecutar venv
+    Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+    .\backend\venv\Scripts\Activate.ps1 
+    .\venv\Scripts\Activate.ps1 
+
+Actualizar requerimientos
+    pip freeze > requirements.txt

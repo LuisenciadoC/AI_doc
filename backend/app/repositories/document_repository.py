@@ -38,22 +38,23 @@ class DocumentRepository:
         cursor = conn.cursor()
 
         query = """
-        SELECT * FROM documento
-        WHERE estado = 1
+        SELECT * FROM Documento
+        WHERE id_estado = 3
         """
-
+        #actualizar estado aprobado es el valido
         cursor.execute(query)
         rows = cursor.fetchall()
 
         return [
             {
                 "id_documento": r[0],
-                "titulo": r[1],
-                "descripcion": r[2],
-                "codigo_documento": r[3],
+                "codigo_documento": r[1],
+                "titulo": r[2],
+                "descripcion": r[3],
                 "fecha_creacion": r[4],
-                "id_area": r[5],
-                "id_tipo": r[6]
+                "fecha_actualizacion": r[5],
+                "id_area": r[6],
+                "id_tipo": r[7]
             }
             for r in rows
         ]

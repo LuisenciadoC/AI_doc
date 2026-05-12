@@ -1,17 +1,17 @@
 import pyodbc
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 def get_connection():
 
+    server = 'Z'
+    database = 'GestionDocumental'
+    driver = '{ODBC Driver 18 for SQL Server}'
+
     connection = pyodbc.connect(
-        'DRIVER={ODBC Driver 18 for SQL Server};'
-        f'SERVER={os.getenv("DB_SERVER")};'
-        f'DATABASE={os.getenv("DB_DATABASE")};'
-        'Trusted_Connection=yes;'
-        'TrustServerCertificate=yes;'
+        f'DRIVER={driver};'
+        f'SERVER={server};'
+        f'DATABASE={database};'
+        f'TrustServerCertificate=yes;'
+        f'Trusted_Connection=yes;'
     )
     
     return connection
