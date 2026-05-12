@@ -71,14 +71,14 @@ class DocumentRepository:
             for r in rows
         ]
     
-    # Método para obtener un documento por ID
+    # Método para obtener un documento por id.
     def get_by_id(self, id_documento):
         #Conexion a la bd.
         conn = get_connection()
         cursor = conn.cursor()
 
         #Query a ejecutar en la bd:
-        #id_documento = ? (Inserta el id como una consulta y no como un codigo, seguridad contra sql inyection).
+        #id_documento = ? (Inserta el codigo como una consulta y no como un codigo, seguridad contra sql inyection).
         #id_estado = 3 (el numero 3 indica que muestre solo los que tienen estado aprobado).
         query = """
         SELECT * FROM documento 
@@ -86,7 +86,7 @@ class DocumentRepository:
         AND id_estado = 3
         """
         
-        #Ejecutor del query y lista de documentos.
+        #Ejecutor del query y guarda documento.
         cursor.execute(query, (id_documento,))
         r = cursor.fetchone()
         
@@ -94,14 +94,51 @@ class DocumentRepository:
         if r:
 
             return {
-                "id_documento": r[0],
-                "codigo_documento": r[1],
-                "titulo": r[2],
-                "descripcion": r[3],
-                "fecha_creacion": r[4],
-                "fecha_actualizacion": r[5],
-                "id_area": r[6],
-                "id_tipo": r[7],
+                "codigo_documento": r[0],
+                "titulo": r[1],
+                "descripcion": r[2],
+                "fecha_creacion": r[3],
+                "fecha_actualizacion": r[4],
+                "id_area": r[5],
+                "id_tipo": r[6],
+            }
+        
+        #Respuesta si no existe el documento.
+        return {
+            "success": False,
+            "message": "Documento no encontrado"
+        }
+    
+    # Método para obtener un documento por codigo.
+    def get_by_cod(self, codigo_documento):
+        #Conexion a la bd.
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        #Query a ejecutar en la bd:
+        #codigo_documento = ? (Inserta el codigo como una consulta y no como un codigo, seguridad contra sql inyection).
+        #id_estado = 3 (el numero 3 indica que muestre solo los que tienen estado aprobado).
+        query = """
+        SELECT * FROM documento 
+        WHERE codigo_documento = ? 
+        AND id_estado = 3
+        """
+        
+        #Ejecutor del query y guarda documento.
+        cursor.execute(query, (codigo_documento,))
+        r = cursor.fetchone()
+        
+        #Devolver documento si es encontrado.
+        if r:
+
+            return {
+                "codigo_documento": r[0],
+                "titulo": r[1],
+                "descripcion": r[2],
+                "fecha_creacion": r[3],
+                "fecha_actualizacion": r[4],
+                "id_area": r[5],
+                "id_tipo": r[6],
             }
         
         #Respuesta si no existe el documento.

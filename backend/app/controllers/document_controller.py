@@ -31,6 +31,13 @@ class DocumentController:
     def view_document_id(id_documento):
         return service.view_documents_id(id_documento)
     
+    #Ruta: /doc/view/codigo_documento 
+    #Método estatico para manejar las solicitudes de visualización por codigo del 
+    #frontend. Las respuestas se esperan del archivo document_service.py
+    @staticmethod
+    def view_document_cod(codigo_documento):
+        return service.view_documents_cod(codigo_documento)
+    
     # Métodos para actualizar documento
     @staticmethod
     def update_document(id_documento, data):

@@ -56,6 +56,18 @@ class DocumentService:
             "data": document
         }
         
+    #Ruta: /doc/view/codigo_documento
+    #Método de respuesta a la consulta de visualizacion de un documento por medio del codigo.
+    #Este metodo trabaja con get_by_cod() metodo que se encuentra en document.repository.py
+    def view_documents_cod(self, codigo_documento):
+        document = self.repository.get_by_cod(codigo_documento)
+        
+        #Retorno de informacion.
+        return {
+            "success": True,
+            "data": document
+        }
+        
     # Método para actualizar documento
     def update_document(self, id_documento, data):
 

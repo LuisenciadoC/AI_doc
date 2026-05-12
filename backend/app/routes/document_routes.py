@@ -35,6 +35,14 @@ def view_document_id(id_documento):
     result = DocumentController.view_document_id(id_documento)
     return jsonify(result)
 
+#Ruta: /doc/view/codigo_documento
+@document.route('/view/<string:codigo_documento>', methods=['GET'])
+#Funcion para ver documentos por medio del codigo, esta funcion obtiene los resultados del archivo 
+#document_controller.py el resultado se convierte en una respuesta tipo Json.
+def view_document_cod(codigo_documento):
+    result = DocumentController.view_document_cod(codigo_documento)
+    return jsonify(result)
+
 #Actualizar documento
 @document.route('/view_documents/<int:id_documento>/update', methods=['PUT'])
 def update_document(id_documento):
