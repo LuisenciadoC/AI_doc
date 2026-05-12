@@ -140,45 +140,6 @@ class DocumentRepository:
         if r:
 
             return {
-                "codigo_documento": r[0],
-                "titulo": r[1],
-                "descripcion": r[2],
-                "fecha_creacion": r[3],
-                "fecha_actualizacion": r[4],
-                "id_area": r[5],
-                "id_tipo": r[6],
-            }
-        
-        #Respuesta si no existe el documento.
-        return {
-            "success": False,
-            "message": "Documento no encontrado"
-        }
-    
-    
-    #---------------Actualizar documentos---------------#
-    #Ruta: /doc/view/id_documento/update
-    #Método para obtener los documentos editables.
-    def get_editable(self, id_documento):
-        #Conexion a la bd.
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        #Query a ejecutar en la bd:
-        #id_documento = ? (Inserta el codigo como una consulta y no como un codigo, seguridad contra sql inyection).
-        #id_estado = 3 (el numero 3 indica que muestre solo los que tienen estado aprobado).
-        query = """
-        SELECT * FROM documento 
-        WHERE id_documento = ?
-        """
-        
-        #Ejecutor del query y guarda documento.
-        cursor.execute(query, (id_documento,))
-        r = cursor.fetchone()
-        
-        #Devolver documento si es encontrado.
-        if r:
-            return {
                 "id_documento": r[0],
                 "titulo": r[1],
                 "descripcion": r[2],
@@ -196,6 +157,45 @@ class DocumentRepository:
             "success": False,
             "message": "Documento no encontrado"
         }
+    
+    
+    #---------------Actualizar documentos---------------#
+    #Ruta: /doc/view/id_documento/update
+    #Método para obtener los documentos editables.
+    def get_editable(self, id_documento=None, codigo_documento=None):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        if id_documento is not None:
+            query = "SELECT * FROM documento WHERE id_documento = ?"
+            cursor.execute(query, (id_documento,))
+        elif codigo_documento is not None:
+            query = "SELECT * FROM documento WHERE codigo_documento = ?"
+            cursor.execute(query, (codigo_documento,))
+        else:
+            return None
+
+        r = cursor.fetchone()
+
+        if r:
+            return {
+                "id_documento": r[0],
+                "titulo": r[1],
+                "descripcion": r[2],
+                "codigo_documento": r[3],
+                "fecha_creacion": r[4],
+                "id_area": r[5],
+                "id_tipo": r[6],
+                "fecha_actualizacion": r[7],
+                "id_estado": r[8],
+                "version_actual": r[9]
+            }
+        else:
+            return {
+                "success": False,
+                "message": "Documento no encontrado"
+            }
+
     
     #Método para actualizar un documento por id. 
     def update_by_id(self, id_documento, data, new_version):
@@ -219,32 +219,54 @@ class DocumentRepository:
         """
 
         cursor.execute(query, (
-
-            # titulo
             data.get("titulo", current_document["titulo"]),
-
-            # descripcion
             data.get("descripcion", current_document["descripcion"]),
-
-            # area
             data.get("id_area", current_document["id_area"]),
-
-            # tipo
             data.get("id_tipo", current_document["id_tipo"]),
-
-            # version_actual
             new_version,
-
-            # id_estado
             data.get("id_estado", 1),
-
-            # where
             id_documento)
         )
 
         conn.commit()
 
         return self.get_editable(id_documento)
+    
+    #Método para actualizar un documento por codigo. 
+    def update_by_cod(self, codigo_documento, data, new_version):
+        #Obtener documento actual.
+        current_document = self.get_editable(codigo_documento=codigo_documento)
+
+        #Conexion a la bd y consulta.
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = """
+        UPDATE Documento SET
+            titulo = ?,
+            descripcion = ?,
+            id_area = ?,
+            id_tipo = ?,
+            version_actual = ?,
+            id_estado = ?,
+            fecha_actualizacion = GETDATE()
+        WHERE codigo_documento = ?
+        """
+
+        cursor.execute(query, (
+            data.get("titulo", current_document["titulo"]),
+            data.get("descripcion", current_document["descripcion"]),
+            data.get("id_area", current_document["id_area"]),
+            data.get("id_tipo", current_document["id_tipo"]),
+            new_version,
+            data.get("id_estado", 1),
+            codigo_documento)
+        )
+
+        conn.commit()
+
+        return self.get_editable(codigo_documento=codigo_documento)
+
     
     
     #---------------Version de documentos---------------#

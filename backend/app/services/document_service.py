@@ -95,10 +95,10 @@ class DocumentService:
     
     #---------------Actualizar documentos---------------#
     #Ruta: /doc/view/id_documento/update
-    #Método logico para actualizar documento.
+    #Método logico para actualizar documento por id.
     def update_by_id(self, id_documento, data):
         #Buscar documento actual.
-        document = self.repository.get_editable(id_documento)
+        document = self.repository.get_editable(id_documento=id_documento)
 
         #Valida si existe el documento.
         if not document:
@@ -107,19 +107,19 @@ class DocumentService:
                 "message": "Documento no encontrado"
             }
 
-        # Guardar versión anterior
+        #Guardar versión anterior.
         self.repository.save_old_version(document)
 
-        #Detectar si es actualización mayor (1.0, 2.0, 3.0, 4.0)
+        #Detectar si es actualización mayor (1.0, 2.0, 3.0, 4.0).
         major_update = data.get("major_update", False)
 
-        #Generar nueva versión (por default es menor (1.1, 1.2, 1.3, 1.4))
+        #Generar nueva versión (por default es menor (1.1, 1.2, 1.3, 1.4)).
         new_version = self.increase_version(
             document["version_actual"],
             major_update
         )
 
-        # Actualizar documento principal
+        #Actualizar documento principal.
         update_by_id = self.repository.update_by_id(
             id_documento,
             data,
@@ -132,6 +132,44 @@ class DocumentService:
             "data": update_by_id
         }
         
+    #Ruta: /doc/view/codigo_documento/update
+    #Método logico para actualizar documento por codigo.
+    def update_by_cod(self, codigo_documento, data):
+        #Buscar documento actual.
+        document = self.repository.get_editable(codigo_documento=codigo_documento)
+
+        #Valida si existe el documento.
+        if not document:
+            return {
+                "success": False,
+                "message": "Documento no encontrado"
+            }
+
+        #Guardar versión anterior.
+        self.repository.save_old_version(document)
+
+        #Detectar si es actualización mayor (1.0, 2.0, 3.0, 4.0).
+        major_update = data.get("major_update", False)
+
+        #Generar nueva versión (por default es menor (1.1, 1.2, 1.3, 1.4)).
+        new_version = self.increase_version(
+            document["version_actual"],
+            major_update
+        )
+
+        #Actualizar documento principal.
+        update_by_cod = self.repository.update_by_cod(
+            codigo_documento,
+            data,
+            new_version
+        )
+
+        return {
+            "success": True,
+            "message": "Documento actualizado",
+            "data": update_by_cod
+        }
+    
     
     #---------------Version de documentos---------------#
     #Método para aumentar version - Usada en update_by_id

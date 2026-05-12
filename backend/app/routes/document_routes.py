@@ -58,17 +58,15 @@ def view_document_cod(codigo_documento):
 #document_controller.py el resultado se convierte en una respuesta tipo Json.
 def update_by_id(id_documento):
     data = request.json
-    result = DocumentController.update_by_id(id_documento, data)
-    return jsonify(result)
+    return jsonify(DocumentController.update_by_id(id_documento, data))
 
 #Ruta: /doc/view/codigo_documento/update
-@document.route('/view/<int:codigo_documento>/update', methods=['PUT'])
+@document.route('/view/<string:codigo_documento>/update', methods=['PUT'])
 #Funcion para actualizar documentos por medio del id, esta funcion obtiene los resultados del archivo 
 #document_controller.py el resultado se convierte en una respuesta tipo Json.
-def update_by_doc(codigo_documento):
+def update_by_cod(codigo_documento):
     data = request.json
-    result = DocumentController.update_by_doc(codigo_documento, data)
-    return jsonify(result)
+    return jsonify(DocumentController.update_by_cod(codigo_documento, data))
 
 
 #Eliminar documento
