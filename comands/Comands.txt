@@ -7,6 +7,7 @@ Backups
     git add .
     git status
     git commit -m "backup - "
+    git pull origin main --allow-unrelated-histories
     git push origin main
 
     Corregir nombre:

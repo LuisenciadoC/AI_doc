@@ -55,28 +55,28 @@ function createMessage(content, type){
 
     if(type === "message_ai"){
 
-    const container = document.createElement("div");
+        const container = document.createElement("div");
 
-    container.classList.add("ai_message_container");
+        container.classList.add("ai_message_container");
 
-    const avatar = document.createElement("div");
+        const avatar = document.createElement("div");
 
-    avatar.classList.add("ai_avatar");
+        avatar.classList.add("ai_avatar");
 
-    avatar.innerText = "D";
+        avatar.innerText = "D";
 
-    container.appendChild(avatar);
+        container.appendChild(avatar);
 
-    container.appendChild(group);
+        container.appendChild(group);
 
-    chatbox.appendChild(container);
+        chatbox.appendChild(container);
 
-}
-else{
+    }
+    else{
 
-    chatbox.appendChild(group);
+        chatbox.appendChild(group);
 
-}
+    }
 
 }
 
@@ -115,32 +115,8 @@ function removeTypingLoader(){
 }
 
 
-//--------------------RESPUESTA IA SIMULADA--------------------//
-function fakeAIResponse(userMessage){
-
-    const responses = [
-
-        "Estoy revisando la documentación relacionada.",
-
-        "Encontré información asociada al procedimiento solicitado.",
-
-        "La política documental contiene datos relacionados con tu consulta.",
-
-        "Docky encontró coincidencias dentro del sistema documental.",
-
-        "Se identificaron documentos vinculados a tu búsqueda."
-    ];
-
-    const random =
-        responses[Math.floor(Math.random() * responses.length)];
-
-    return `${random}\n\nConsulta realizada: "${userMessage}"`;
-
-}
-
-
 //--------------------ENVIAR MENSAJE--------------------//
-function sendMessage(){
+async function sendMessage(){
 
     const message = userInput.value.trim();
 
@@ -165,24 +141,63 @@ function sendMessage(){
     //--------------------MOSTRAR LOADER--------------------//
     createTypingLoader();
 
-    //--------------------RESPUESTA IA--------------------//
-    setTimeout(() => {
+    try{
 
+        //--------------------PETICION BACKEND--------------------//
+        const response = await fetch("http://127.0.0.1:5000/ai/ask", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                question: message
+            })
+
+        });
+
+        //--------------------CONVERTIR JSON--------------------//
+        const data = await response.json();
+
+        //--------------------REMOVER LOADER--------------------//
         removeTypingLoader();
 
-        const response = fakeAIResponse(message);
+        //--------------------MOSTRAR RESPUESTA--------------------//
+        if(data.success){
 
-        createMessage(response, "message_ai");
+            createMessage(data.response, "message_ai");
 
+        }else{
+
+            createMessage(
+                "No se encontraron documentos relacionados.",
+                "message_ai"
+            );
+
+        }
+
+        //--------------------SCROLL--------------------//
         chatbox.scrollTop = chatbox.scrollHeight;
 
         //--------------------GUARDAR HISTORIAL--------------------//
         saveHistory(message);
 
-    }, 1800);
+    }catch(error){
+
+        removeTypingLoader();
+
+        createMessage(
+            "Error conectando con el servidor.",
+            "message_ai"
+        );
+
+        console.error(error);
+
+    }
 
 }
-
 
 //--------------------GUARDAR HISTORIAL--------------------//
 function saveHistory(message){
