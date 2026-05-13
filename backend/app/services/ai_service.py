@@ -1,12 +1,18 @@
 import requests
-
 from app.repositories.document_repository import DocumentRepository
+
+#---------------ai_service.py---------------#
+#Este documento recibe la instruccion del controller y realiza todas las 
+#operaciones logicas.
 
 class AIService:
 
     def __init__(self):
         self.repository = DocumentRepository()
         
+    #---------------Preguntar por documentos---------------#
+    #Ruta: /ai/ask
+    #Método logico para realizar preguntas a la ia sobre la documentacion.  
     def ask_question(self, question):
         documents = self.repository.search_documents(question)
         
@@ -14,6 +20,7 @@ class AIService:
         for doc in documents:
 
             context += f"""
+            Código: {doc['codigo_documento']}
             Título: {doc['titulo']}
             Descripción: {doc['descripcion']}
             """
@@ -26,9 +33,10 @@ class AIService:
         
         # Prompt enviado a Ollama
         prompt = f"""
-        Responde usando la información de los documentos.
-        Si encuentras información relacionada, responde de forma clara y resumida.
-
+        Responde usando la información de los documentos, incluye de manera breve el titulo, el codigo del documento y el resumen o respuesta a la pregunta en tu respuesta..
+        Si encuentras información relacionada, responde de forma clara, resumida y directa con un paso a paso.
+        
+        
         Documentos:
         {context}
 
@@ -52,3 +60,4 @@ class AIService:
             "success": True,
             "response": data["response"]
         }
+        

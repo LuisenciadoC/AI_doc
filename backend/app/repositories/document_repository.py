@@ -364,10 +364,15 @@ class DocumentRepository:
             values.append(f"%{word}%")
 
         query = f"""
-        SELECT *
-        FROM documento
-        WHERE {" OR ".join(conditions)}
-        """
+            SELECT
+            id_documento,
+            titulo,
+            descripcion,
+            codigo_documento
+            FROM documento
+            WHERE id_estado = 3
+            AND ({" OR ".join(conditions)})
+            """
 
         cursor.execute(query, values)
 
@@ -377,7 +382,8 @@ class DocumentRepository:
             {
                 "id_documento": r[0],
                 "titulo": r[1],
-                "descripcion": r[2]
+                "descripcion": r[2],
+                "codigo_documento": r[3]
             }
             for r in rows
         ]

@@ -69,8 +69,10 @@ def update_by_cod(codigo_documento):
     return jsonify(DocumentController.update_by_cod(codigo_documento, data))
 
 
+#---------------Eliminar documentos---------------#
+#Ruta: /doc/view/id_documento
 #Eliminar documento
-@document.route('/view_documents/<int:id_documento>', methods=['DELETE'])
+@document.route('/view/<int:id_documento>', methods=['DELETE'])
 def delete_document(id_documento):
     result = DocumentController.delete_document(
         id_documento
@@ -78,7 +80,10 @@ def delete_document(id_documento):
 
     return jsonify(result)
 
-@document.route('/view_documents/<int:id_documento>/restore', methods=['PUT'])
+
+#---------------Restaurar documentos---------------#
+#Ruta: /doc/view/id_documento/restore
+@document.route('/view/<int:id_documento>/restore', methods=['PUT'])
 def restore_document(id_documento):
     result = DocumentController.restore_document(
         id_documento

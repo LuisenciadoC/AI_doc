@@ -1,8 +1,17 @@
 Ejecutar archivo
-    cd backend
-    .\venv\Scripts\Activate.ps1 
+    .\backend\venv\Scripts\Activate.ps1 
     python app.py
     ollama run mistral
+
+Backups
+    git add .
+    git status
+    git commit -m "backup - "
+    git push origin main
+
+    Corregir nombre:
+    git commit --amend -m "backup - "
+    git push origin main --force
 
 Rutas
     Documentos:
@@ -17,17 +26,6 @@ Rutas
 
     IA:
     http://127.0.0.1:5000/ai/question
-
-
-Backups
-    git add .
-    git status
-    git commit -m "backup - "
-    git push origin main
-
-    Corregir nombre:
-    git commit --amend -m "backup - "
-    git push origin main --force
 
 Navegar entre carpetas
     cd backend

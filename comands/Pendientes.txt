@@ -1,2 +1,2 @@
 1. Agregar version_actual a los otros metodos
-2. Agregar fecha de actualización
+2. Tomar fotos de update y versiones
