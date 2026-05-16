@@ -1,34 +1,54 @@
+from werkzeug.security import check_password_hash
+
 class AuthService:
+
     def __init__(self, user_repository):
+
         self.user_repository = user_repository
 
     def login(self, correo, password):
-        
-        #Validacion de campos vacíos
+
+        # Validar campos vacíos
         if not correo or not password:
+
             return {
                 "success": False,
                 "message": "Correo y contraseña son obligatorios"
             }
-            
-        # Buscamos el usuario en la base de datos
+
+        # Buscar usuario
         user = self.user_repository.get_by_email(correo)
-        
-        # Si no existe el usuario
+
+        # Validar existencia
         if not user:
+
             return {
                 "success": False,
                 "message": "Usuario no encontrado"
             }
 
-        # Validación de contraseña (en futuro aquí se usa hash)
-        if user["contraseña"] != password:
+        # Validar contraseña HASH
+        valid_password = check_password_hash(
+            user["contrasena"],
+            password
+        )
+
+        if not valid_password:
+
             return {
                 "success": False,
                 "message": "Contraseña incorrecta"
             }
-            
-        # Si todo está bien, devolvemos información del usuario
+
+        # Validar estado
+        if user["estado"] == 0:
+
+            return {
+                "success": False,
+                "message": "Usuario desactivado"
+            }
+
+        # Login exitoso
         return {
             "success": True,
             "message": "Login exitoso",
@@ -37,5 +57,5 @@ class AuthService:
                 "nombre": user["nombre"],
                 "correo": user["correo"],
                 "id_rol": user["id_rol"]
+            }
         }
-    }
