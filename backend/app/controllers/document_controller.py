@@ -59,18 +59,15 @@ class DocumentController:
         return service.update_by_cod(codigo_documento, data)
     
     
-# Métodos para eliminar documento   
-    # Método para hacer Soft delete
+    #---------------Eliminar documentos---------------#
+    #Ruta: /doc/view/id_documento
+    #Método para eliminar por id (Desactivar archivos mayores a 36 horas de subido).
     @staticmethod
-    def delete_document(id_documento):
-        return service.delete_document(
+    def delete_by_id(id_documento):
+        return service.delete_by_id(
             id_documento
         )
     
-    # Método para eliminar de manera permanente
-    @staticmethod
-    def hard_delete(id_documento):
-        return service.hard_delete(id_documento)
     
     @staticmethod
     def restore_document(id_documento):

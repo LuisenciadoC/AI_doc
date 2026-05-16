@@ -3,6 +3,7 @@ from flask_cors import CORS
 from app.routes.auth_routes import auth
 from app.routes.document_routes import document
 from app.routes.ai_routes import ai
+from app.routes.user_routes import user
 
 #---------------App.py---------------#
 #Ejecuta todo el proyecto Flask
@@ -14,6 +15,7 @@ CORS(app)
 app.register_blueprint(auth, url_prefix="/auth")
 app.register_blueprint(document, url_prefix="/doc")
 app.register_blueprint(ai, url_prefix="/ai")
+app.register_blueprint(user, url_prefix='/user')
 
 if __name__ == "__main__":
     app.run(debug=True)

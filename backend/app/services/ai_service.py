@@ -34,8 +34,13 @@ class AIService:
         # Prompt enviado a Ollama
         prompt = f"""
         Responde usando la información de los documentos, incluye de manera breve el titulo, el codigo del documento y el resumen o respuesta a la pregunta en tu respuesta..
-        Si encuentras información relacionada, responde de forma clara, resumida y directa con un paso a paso.
+        Si encuentras información relacionada, responde de forma clara, resumida y directa con un paso a paso y con una respuesta estandar usando el siguiente formato:
         
+        Titulo: Titulo de los documentos
+        Codigo: codigos de los documentos
+        
+        Respuesta: Respuesta a la pregunta del usuario
+        Pasos a seguir: Paso a paso a seguir para cumplir lo que dice el documento.
         
         Documentos:
         {context}
@@ -57,7 +62,7 @@ class AIService:
         data = response.json()
 
         return {
-            "success": True,
+            "success": True, 
             "response": data["response"]
         }
         

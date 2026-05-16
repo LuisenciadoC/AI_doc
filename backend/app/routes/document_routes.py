@@ -71,13 +71,11 @@ def update_by_cod(codigo_documento):
 
 #---------------Eliminar documentos---------------#
 #Ruta: /doc/view/id_documento
-#Eliminar documento
+#Funcion para eliminar documentos por medio del id, esta funcion obtiene los resultados del archivo 
+#document_controller.py el resultado se convierte en una respuesta tipo Json.
 @document.route('/view/<int:id_documento>', methods=['DELETE'])
-def delete_document(id_documento):
-    result = DocumentController.delete_document(
-        id_documento
-    )
-
+def delete_by_id(id_documento):
+    result = DocumentController.delete_by_id(id_documento)
     return jsonify(result)
 
 
@@ -85,8 +83,5 @@ def delete_document(id_documento):
 #Ruta: /doc/view/id_documento/restore
 @document.route('/view/<int:id_documento>/restore', methods=['PUT'])
 def restore_document(id_documento):
-    result = DocumentController.restore_document(
-        id_documento
-    )
-
+    result = DocumentController.restore_document(id_documento)
     return jsonify(result)

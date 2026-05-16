@@ -3,6 +3,44 @@ from app.config.db import get_connection
 
 class UserRepository:
 
+    # Crear usuario
+    def create_user(
+        self,
+        nombre,
+        correo,
+        contrasena,
+        id_rol
+    ):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = """
+        INSERT INTO usuario
+        (
+            nombre,
+            correo,
+            contrasena,
+            estado,
+            fecha_creacion,
+            id_rol
+        )
+        VALUES (?, ?, ?, ?, GETDATE(), ?)
+        """
+
+        cursor.execute(
+            query,
+            (
+                nombre,
+                correo,
+                contrasena,
+                1,
+                id_rol
+            )
+        )
+
+        conn.commit()
+    
     def get_by_email(self, correo):
 
         # Abrimos conexión con la base de datos

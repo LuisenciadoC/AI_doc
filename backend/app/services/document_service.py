@@ -172,7 +172,7 @@ class DocumentService:
     
     
     #---------------Version de documentos---------------#
-    #Método para aumentar version - Usada en update_by_id
+    #Método para aumentar version - Usada en update_by_id y update_by_cod.
     def increase_version(self, current_version, major_update=False):
         #Separar version mayor (1.0 -> 2.0) de versiones menores (1.0 -> 1.1)
         major, minor = map(int, current_version.split("."))
@@ -186,39 +186,34 @@ class DocumentService:
 
         return f"{major}.{minor}"
     
-        
-    # Método para eliminar documento
-    def delete_document(self, id_documento):
-
-        # Buscar documento
+    
+    #---------------Eliminar documentos---------------#            
+    #Método para eliminar documento dependiendo del tiempo (Soft delete mayor a 36 horas o Hard delete menor a 36 horas)
+    def delete_by_id(self, id_documento):
+        #Buscar documento.
         document = self.repository.get_by_id(
             id_documento
         )
 
         if not document:
-
             return {
                 "success": False,
                 "message": "Documento no encontrado"
             }
 
-        # Fecha creación documento
+        #Fecha creación documento.
         fecha_creacion = document["fecha_creacion"]
-
-        # Fecha actual
+        #Fecha actual.
         now = datetime.now()
 
-        # Diferencia horas
-        hours_difference = (
-            now - fecha_creacion
-        ).total_seconds() / 3600
+        #Diferencia horas.
+        hours_difference = (now - fecha_creacion).total_seconds() / 3600
 
-        # HARD DELETE
+        #Llamar Hard delete en caso de ser menor o igual a 36 horas.
         if hours_difference <= 36:
+            return self.harddelete_by_id(id_documento)
 
-            return self.hard_delete(id_documento)
-
-        # SOFT DELETE
+        #Llamar Soft delete en caso de ser mayor a 36 horas.
         self.repository.soft_delete(id_documento)
 
         return {
@@ -226,35 +221,10 @@ class DocumentService:
             "message": "Documento desactivado logicamente"
         }
         
-    
-    # Método para eliminar un documento de manera permanente
-    def hard_delete(self, id_documento):
-        # Buscar última versión guardada
-        last_version = self.repository.get_last_version(
-            id_documento
-        )
+    #Método para eliminar un documento de manera permanente (Hard delete)
+    def harddelete_by_id(self, id_documento):
 
-        # SI EXISTE HISTORIAL
-        if last_version:
-
-            # Restaurar esa versión
-            self.repository.restore_version(
-                id_documento,
-                last_version
-            )
-
-            # Eliminarla del historial
-            self.repository.delete_last_version(
-                last_version["id_version"]
-            )
-
-            return {
-                "success": True,
-                "message": "Versión anterior restaurada"
-            }
-
-        # SI NO EXISTE HISTORIAL
-        self.repository.hard_delete(id_documento)
+        self.repository.harddelete_by_id(id_documento)
 
         return {
             "success": True,
@@ -263,12 +233,9 @@ class DocumentService:
         
     def restore_document(self, id_documento):
 
-        document = self.repository.get_by_id(
-            id_documento
-        )
+        document = self.repository.get_editable(id_documento)
 
         if not document:
-
             return {
                 "success": False,
                 "message": "Documento no encontrado"

@@ -195,7 +195,6 @@ class DocumentRepository:
                 "success": False,
                 "message": "Documento no encontrado"
             }
-
     
     #Método para actualizar un documento por id. 
     def update_by_id(self, id_documento, data, new_version):
@@ -268,7 +267,6 @@ class DocumentRepository:
         return self.get_editable(codigo_documento=codigo_documento)
 
     
-    
     #---------------Version de documentos---------------#
     #Método para guardar versiones antiguas
     def save_old_version(self, document):
@@ -313,35 +311,36 @@ class DocumentRepository:
         conn.commit()
     
         
-# Métodos para eliminar documentos
+    #---------------Eliminar documentos---------------#
+    #Soft delete (mayores a 36 horas)
+    def soft_delete(self, id_documento):
+        #Conexion a la bd.
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        #Query para actualizar el estado a 5 (Obsoleto).
+        query = """
+        UPDATE documento
+        SET id_estado = 5
+        WHERE id_documento = ?
+        """
+
+        cursor.execute(query, (id_documento,))
+        conn.commit()
+     
     # Hard delete (menor a 36 horas)
-    def hard_delete(self, id_documento):
+    def harddelete_by_id(self, id_documento):
+        #Conexion a la bd.
         conn = get_connection()
         cursor = conn.cursor()
         
+        #Query para eliminar de la bd el documento mediante id.
         query = "DELETE FROM documento WHERE id_documento = ?"
         
         cursor.execute(query, (id_documento,))
         conn.commit()
     
-    # Soft delete (mayores a 36 horas)
-    def soft_delete(self, id_documento):
-
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        query = """
-        UPDATE documento
-        SET
-            estado = 0,
-            es_vigente = 0
-        WHERE id_documento = ?
-        """
-
-        cursor.execute(query, (id_documento,))
-
-        conn.commit()
-        
+   
     # Método para buscar documentos para IA
     def search_documents(self, question):
 
@@ -411,7 +410,7 @@ class DocumentRepository:
 
             return {
                 "id_version": row[0],
-                "numero_version": row[1],
+                "version_actual": row[1],
                 "titulo": row[2],
                 "descripcion": row[3],
                 "codigo_documento": row[4]
@@ -426,14 +425,14 @@ class DocumentRepository:
         cursor = conn.cursor()
 
         query = """
-        UPDATE documento
-        SET
-            titulo = ?,
-            descripcion = ?,
-            codigo_documento = ?,
-            numero_version = ?
-        WHERE id_documento = ?
-        """
+            UPDATE documento
+            SET
+                titulo = ?,
+                descripcion = ?,
+                codigo_documento = ?,
+                version_actual = ?
+            WHERE id_documento = ?
+            """
 
         cursor.execute(
             query,
@@ -441,7 +440,7 @@ class DocumentRepository:
                 version["titulo"],
                 version["descripcion"],
                 version["codigo_documento"],
-                version["numero_version"],
+                version["version_actual"],
                 id_documento
             )
         )
@@ -470,9 +469,7 @@ class DocumentRepository:
 
         query = """
         UPDATE documento
-        SET
-            estado = 1,
-            es_vigente = 1
+        SET id_estado = 3
         WHERE id_documento = ?
         """
 

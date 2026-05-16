@@ -1,8 +1,8 @@
 Ejecutar archivo
     .\backend\venv\Scripts\Activate.ps1 
-    python app.py
+    python backend/app.py
     ollama run mistral
-
+    
 Backups
     git add .
     git status
@@ -38,3 +38,11 @@ Ejecutar venv
 
 Actualizar requerimientos
     pip freeze > requirements.txt
+
+
+id_estado	nombre_estado
+    1	      Borrador
+    2	      Revision
+    3	      Aprobado
+    4	      Rechazado
+    5	      Obsoleto
