@@ -1,0 +1,135 @@
+/* documents.css */
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f5f3f3;
+}
+
+.documents_container{
+    width: 100%;
+    min-height: 100vh;
+    padding: 40px;
+}
+
+.documents_header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.documents_header h1{
+    letter-spacing: 4px;
+}
+
+.documents_header button{
+    padding: 14px 26px;
+    border-radius: 30px;
+    border: 4px solid #22184b;
+    background-color: #c9b38a;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.search_section{
+    display: flex;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.search_section input{
+    flex: 1;
+    padding: 16px;
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    font-size: 16px;
+}
+
+.search_section button{
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: none;
+    background-color: #c9b38a;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.table_section{
+    background-color: white;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td{
+    border: 1px solid #ddd;
+    padding: 18px;
+    text-align: center;
+}
+
+th{
+    background-color: #e8dcc6;
+}
+
+td button{
+    padding: 8px 16px;
+    margin: 2px;
+    border: none;
+    border-radius: 10px;
+    background-color: #c9b38a;
+    cursor: pointer;
+}
+
+.modal{
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,0,0,0.5);
+    width: 100%;
+    height: 100vh;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal_content{
+    background-color: white;
+    width: 600px;
+    padding: 40px;
+    border: 3px solid #d2b98f;
+}
+
+.modal_content h2{
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.modal_content input,
+.modal_content textarea{
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 14px;
+    border: none;
+    border-bottom: 2px solid #999;
+    outline: none;
+}
+
+.modal_content button{
+    padding: 12px 20px;
+    border-radius: 20px;
+    border: 3px solid #22184b;
+    background-color: #c9b38a;
+    cursor: pointer;
+    margin-right: 10px;
+}

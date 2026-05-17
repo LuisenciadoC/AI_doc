@@ -1,0 +1,147 @@
+/* dashboard.css */
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f5f3f3;
+}
+
+.dashboard_container{
+    display: flex;
+    width: 100%;
+    height: 100vh;
+}
+
+.sidebar{
+    width: 260px;
+    background-color: #c9b38a;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 30px;
+}
+
+.profile{
+    text-align: center;
+}
+
+.profile img{
+    width: 120px;
+    margin-bottom: 20px;
+}
+
+.profile h3{
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+}
+
+.profile p{
+    letter-spacing: 2px;
+}
+
+.menu{
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-top: 50px;
+}
+
+.menu a{
+    text-decoration: none;
+    color: white;
+    font-size: 22px;
+    letter-spacing: 3px;
+    transition: 0.3s;
+}
+
+.menu a:hover{
+    color: #22184b;
+}
+
+.logout_button{
+    padding: 14px;
+    border-radius: 30px;
+    border: 4px solid #22184b;
+    background-color: #c9b38a;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.main_content{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar{
+    background-color: #c9b38a;
+    padding: 20px;
+    text-align: center;
+}
+
+.topbar h1{
+    letter-spacing: 4px;
+}
+
+.summary{
+    display: flex;
+    gap: 30px;
+    padding: 40px;
+}
+
+.card{
+    flex: 1;
+    background-color: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+}
+
+.card h3{
+    margin-bottom: 20px;
+}
+
+.card p{
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.table_section{
+    padding: 40px;
+}
+
+.table_header{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.table_header button{
+    padding: 12px 24px;
+    border-radius: 20px;
+    border: 3px solid #22184b;
+    background-color: #c9b38a;
+    cursor: pointer;
+}
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+th,
+td{
+    border: 1px solid #ccc;
+    padding: 16px;
+    text-align: center;
+}
+
+th{
+    background-color: #e8dcc6;
+}

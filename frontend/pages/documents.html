@@ -1,0 +1,105 @@
+<!-- documents.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentos | Docky AI</title>
+
+    <link rel="stylesheet" href="../css/documents.css">
+</head>
+<body>
+
+<div class="documents_container">
+
+    <!-- HEADER -->
+    <header class="documents_header">
+
+        <h1>
+            Gestión de Documentos
+        </h1>
+
+        <button onclick="openCreateModal()">
+            + Crear Documento
+        </button>
+
+    </header>
+
+    <!-- BUSCADOR -->
+    <section class="search_section">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Buscar por código o ID"
+        >
+
+        <button onclick="searchDocument()">
+            Buscar
+        </button>
+
+        <button onclick="loadDocuments()">
+            Mostrar todos
+        </button>
+
+    </section>
+
+    <!-- TABLA -->
+    <section class="table_section">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Código</th>
+                    <th>Título</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="documentsTable">
+
+            </tbody>
+
+        </table>
+
+    </section>
+
+</div>
+
+<!-- MODAL CREAR -->
+<div class="modal" id="createModal">
+
+    <div class="modal_content">
+
+        <h2>Crear documento</h2>
+
+        <input type="text" id="codigo_documento" placeholder="Código">
+
+        <input type="text" id="titulo" placeholder="Título">
+
+        <textarea
+            id="descripcion"
+            placeholder="Descripción"
+        ></textarea>
+
+        <button onclick="createDocument()">
+            Guardar
+        </button>
+
+        <button onclick="closeCreateModal()">
+            Cancelar
+        </button>
+
+    </div>
+
+</div>
+
+<script src="../js/documents.js"></script>
+
+</body>
+</html>
